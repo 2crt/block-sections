@@ -1,0 +1,15 @@
+{
+    "name": "2crt/block-sections",
+    "version": "v1.0.0",
+    "license": "MIT",
+    "autoload": {
+		"files": [
+			"src/register-wp-cli-commands.php"
+		],
+        "psr-4": {
+            "BlockSections\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {}
+}

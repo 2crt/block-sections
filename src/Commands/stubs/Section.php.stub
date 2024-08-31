@@ -1,0 +1,62 @@
+<?php
+namespace Sections;
+
+use BlockSections\Section;
+
+/**
+ * {{ title }}
+ */
+class {{ name }} extends Section {
+	/**
+	 * Initialize the section.
+	 */
+	function init() {
+		// The section name, wihtout "acf/app-" prefix. It will be added automatically
+		// Full slug: "acf/app-{{ slug_without_section_suffix }}"
+		$this->name = '{{ slug_without_section_suffix }}';
+
+		// Human readable section Title
+		$this->title = __( '[Theme] {{ title_camel_case }}', 'app' );
+
+		// The `$setting` for the section's root ACF block. See
+		// https://www.advancedcustomfields.com/resources/acf_register_block_type/#settings
+		$this->args = [
+			'description' => __( '{{ description }}', 'app' ),
+			'keywords' => [
+				'{{ slug }}'
+			],
+		];
+
+		// Child block type hierarchy
+		$this->inner_block_types = [
+			// 'item'
+		];
+	}
+
+	/**
+	 * Render Section root element.
+	 *
+	 * @param $block
+	 * @param $content
+	 * @param $is_preview
+	 * @param $post_id
+	 * @param $wp_block
+	 * @param $context
+	 * @return void
+	 */
+	function render( $block, $content, $is_preview, $post_id, $wp_block, $context ) {
+		?>
+		<section class="section section--{{ slug_without_section_suffix }}">
+			<?php // $this->inner_blocks($block) ?>
+		</section><!-- /.section -->
+		<?php
+	}
+
+	/*
+	function render_item( $block, $content, $is_preview, $post_id, $wp_block, $context ) {
+		?>
+
+		<?php
+	}
+	*/
+}
