@@ -4,16 +4,15 @@ namespace BlockSections\Commands;
 
 use WP_CLI;
 
+/**
+ * Generate boilerplate section code
+ */
 class MakeSectionCommand {
 	private $template_file_location = __DIR__ . '/stubs/Section.php.stub';
 
-	function is_valid_section_name( $section_name_candidate ) {
-		return preg_match( '~^[\dA-Z].+~', $section_name_candidate );
-	}
-
-	function __invoke( $args, $assoc_args ) {
+	function __invoke( $args ) {
 		if ( isset( $args[0] ) && ! $this->is_valid_section_name($args[0]) ) {
-			WP_CLI::line( '❗ Invalid Section Name: ' . $args[0] . " - section names should start with capital letter or digit(e.g. \"HeroCallToAction\" and contain at least 2 characters)" );
+			WP_CLI::line( '❗ Invalid Section Name: ' . $args[0] . " - section names should start with capital letter or digit and contain at least 2 characters" );
 			unset( $args[0] );
 		}
 
@@ -24,7 +23,7 @@ class MakeSectionCommand {
 				if ( $this->is_valid_section_name( $section_name ) ) {
 					break;
 				}
-				WP_CLI::line( '❗ Invalid Section Name: ' . $section_name . " - section names should start with capital letter or digit(e.g. \"HeroCallToAction\" and contain at least 2 characters)" );
+				WP_CLI::line( '❗ Invalid Section Name: ' . $section_name . " - section names should start with capital letter and contain at least 2 characters)" );
 			}
 		} else {
 			$section_name = $args[0];
@@ -37,20 +36,20 @@ class MakeSectionCommand {
 		$section_title = ucfirst( strtolower( trim( implode( ' ', preg_split( '/(?=[A-Z])/', $section_name ) ) ) ) );
 
 		$section_title_camel_case = mb_convert_case( $section_title, MB_CASE_TITLE, 'UTF-8' );
-		$file_name = $section_name . '.php';
-		$file_path = get_stylesheet_directory() . '/sections/' . $file_name;
 
-		// Create the sections directory within the team, if it doesn't exist
-		if ( !file_exists( dirname( $file_path ) ) ) {
-			mkdir( dirname( $file_path ) );
+		$sections_dir_path = get_stylesheet_directory() . '/sections/';
+		$section_file_path = $sections_dir_path . $section_name . '.php';
+
+		if ( !file_exists( $sections_dir_path ) ) {
+			mkdir( $sections_dir_path );
 		}
 
-		if ( file_exists( $file_path ) ) {
-			WP_CLI::confirm( "❓ Section $section_name already exists in $file_path. Would you like to overwrite it? " );
+		if ( file_exists( $section_file_path ) ) {
+			WP_CLI::confirm( "❓ Section $section_name already exists in $section_file_path. Would you like to overwrite it? " );
 		}
 
 		$template = file_get_contents( $this->template_file_location );
-		$rendered_php = $this->_render( $template, [
+		$rendered_php = $this->render_template( $template, [
 			'name' => $section_name,
 			'title' => $section_title,
 			'title_camel_case' => $section_title_camel_case,
@@ -59,12 +58,12 @@ class MakeSectionCommand {
 			'description' => $section_title,
 		] );
 
-		if ( ! file_exists( dirname( $file_path ) ) ) {
-			mkdir( dirname( $file_path ) );
+		if ( ! file_exists( dirname( $section_file_path ) ) ) {
+			mkdir( dirname( $section_file_path ) );
 		}
-		file_put_contents( $file_path, $rendered_php );
+		file_put_contents( $section_file_path, $rendered_php );
 
-		WP_CLI::line( '✅ Generated section ' . $section_name . ' in ' . $file_path );
+		WP_CLI::line( '✅ Generated section ' . $section_name . ' in ' . $section_file_path );
 
 		$sections_registration_file = get_stylesheet_directory() . '/includes/sections.php';
 
@@ -97,11 +96,30 @@ class MakeSectionCommand {
 		exit( 0 );
 	}
 
-	function _render( string $stub, array $context ) {
+	/**
+	 * Validate section name: require at least 2 characters, starting with a capital
+	 * letter or a digit.
+	 *
+	 * @param string $section_name_candidate
+	 * @return bool
+	 */
+	function is_valid_section_name( string $section_name_candidate ) {
+		return !!preg_match( '~^[\dA-Z].+~', $section_name_candidate );
+	}
+
+	/**
+	 * Render a mustache-like template string against hash $context that contains
+	 * the template variables.
+	 *
+	 * @param string $template_file_location
+	 * @param array $context
+	 * @return string
+	 */
+	function render_template( string $template_file_source, array $context ) {
 		return preg_replace_callback(
 			'~\{\{(.+?)\}\}~',
 			fn ( $matches ) => $context[trim( $matches[1] )],
-			$stub
+			$template_file_source
 		);
 	}
 }
