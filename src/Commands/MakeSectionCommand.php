@@ -40,6 +40,11 @@ class MakeSectionCommand {
 		$file_name = $section_name . '.php';
 		$file_path = get_stylesheet_directory() . '/sections/' . $file_name;
 
+		// Create the sections directory within the team, if it doesn't exist
+		if ( !file_exists( dirname( $file_path ) ) ) {
+			mkdir( dirname( $file_path ) );
+		}
+
 		if ( file_exists( $file_path ) ) {
 			WP_CLI::confirm( "❓ Section $section_name already exists in $file_path. Would you like to overwrite it? " );
 		}
