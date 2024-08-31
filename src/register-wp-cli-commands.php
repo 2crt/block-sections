@@ -8,7 +8,7 @@ if ( ! class_exists( 'WP_CLI' ) ) {
 
 WP_CLI::add_command( 'make:section', MakeSectionCommand::class, [
 	'shortdesc' => 'Generate a section template',
-	'longdesc' => 'Generate a section template for 2create base WordPress theme based on ACF with InnerBlocks',
+	'longdesc' => 'Generate a section template for 2crt base WordPress theme based on ACF with InnerBlocks',
 	'synopsis' => [
 		'type' => 'assoc',
 		'name' => 'name',
