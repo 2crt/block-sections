@@ -29,9 +29,20 @@ abstract class Section {
 	protected array $inner_block_types = [];
 
 	/**
+	 * URL to a screenshot of the section, for use in the block inserter
+	 */
+	protected string $example_screenshot = '';
+
+	/**
+	 * Is WP_DEBUG is enabled?
+	 */
+	protected bool $is_debug;
+
+	/**
 	 * Constuctor
 	 */
 	function __construct() {
+        $this->is_debug = defined('WP_DEBUG') && WP_DEBUG;
 		$this->init();
 	}
 
@@ -39,6 +50,11 @@ abstract class Section {
 	 * Initialize function.
 	 */
 	abstract function init();
+
+	/**
+	 * Section root render function
+	 */
+	abstract function render( $block, $content, $is_preview, $post_id, $wp_block, $context );
 
 	/**
 	 * Register the section in the Gutenberg Block Editor
@@ -97,17 +113,26 @@ abstract class Section {
 			$supports['multiple'] = $args['multiple'];
 		}
 
-		$implied_render_callback = trim( str_replace(
-			'-',
-			'_',
-			'render_' . ltrim( str_replace( 'app-' . $this->name, '', $slug ), '-' )
-		), '_' );
+        if ($parent_block_type_slug) {
+            $implied_render_callback = trim( str_replace(
+                '-',
+                '_',
+                'render_' . ltrim( str_replace( 'app-' . $this->name, '', $slug ), '-' )
+            ), '_' );
+            $callback = [$this, $implied_render_callback];
+
+            if (!is_callable($callback) && $this->is_debug) {
+                throw new \RuntimeException("Callback for section block not found: " . $implied_render_callback);
+            }
+        } else {
+            $callback = [$this, '_render_root_block'];
+        }
 
 		$args = wp_parse_args( $args, [
 			'name' => $slug,
 			'title' => $title,
 			'description' => '',
-			'render_callback' => [$this, $implied_render_callback],
+			'render_callback' => $callback,
 			'post_types' => [],
 			'category' => 'app-custom',
 			'icon' => $this->block_type_has_acf_fields( $slug ) ? 'admin-settings' : 'block-default',
@@ -116,6 +141,15 @@ abstract class Section {
 			'mode' => 'preview',
 			'supports' => $supports,
 		] );
+
+        if (empty($parent_block_type_slug) && !empty($this->example_screenshot)) {
+            $args['example'] = [
+                'attributes' => [
+                    'mode' => 'preview',
+                    'data' => [ '_is_preview' => true ]
+                ]
+            ];
+        }
 
 		acf_register_block_type( $args );
 
@@ -234,6 +268,31 @@ abstract class Section {
 		return in_array( $block_type_slug, ( $blocks_with_fields ?: [] ) );
 	}
 
+    /**
+     * Handle the root in the base class in order to show example screenshot when needed.
+     * When a screenshot of the section is needed, this method will return it.
+     * In all other cases it's just a proxy for the actual render method. 
+     *
+	 * @param $block
+	 * @param $content
+	 * @param $is_preview
+	 * @param $post_id
+	 * @param $wp_block
+	 * @param $context
+	 * @return void
+     */
+    function _render_root_block( $block, $content, $is_preview, $post_id, $wp_block, $context ) {
+        if ( isset( $block['data']['_is_preview'] ) && $block['data']['_is_preview'] ) {
+            if (!empty($this->example_screenshot)) {
+                echo '<img src="' . $this->example_screenshot . '">';
+                return;
+            }
+        }
+
+        return $this->render( $block, $content, $is_preview, $post_id, $wp_block, $context );
+    }
+
+
 	private function get_allowed_block_types( $allowed_blocks = [] ) {
 		if ( ! empty( $allowed_blocks ) ) {
 			return array_values( $allowed_blocks );
@@ -244,5 +303,6 @@ abstract class Section {
 
 		return  array_values( $allowed_blocks );
 	}
+
 }
 

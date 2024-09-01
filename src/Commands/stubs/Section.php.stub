@@ -18,6 +18,11 @@ class {{ name }} extends Section {
 		// Human readable section Title
 		$this->title = __( '[Theme] {{ title_camel_case }}', 'app' );
 
+		// Example screenshot of the section for gutenberg block inserter.
+		// This allows editors to understand what the blocks looks like
+		// before it's inserted
+		$this->example_screenshot = get_stylesheet_directory_uri() . '/resources/images/previews/{{ slug }}.png';
+
 		// The `$setting` for the section's root ACF block. See
 		// https://www.advancedcustomfields.com/resources/acf_register_block_type/#settings
 		$this->args = [
