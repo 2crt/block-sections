@@ -1,6 +1,6 @@
 {
     "name": "2crt/block-sections",
-    "version": "v1.0.0",
+    "version": "v1.0.1",
     "license": "MIT",
     "autoload": {
 		"files": [
