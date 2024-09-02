@@ -11,19 +11,19 @@ class MakeSectionCommand {
 	private $template_file_location = __DIR__ . '/stubs/Section.php.stub';
 
 	function __invoke( $args ) {
-		if ( isset( $args[0] ) && ! $this->is_valid_section_name($args[0]) ) {
-			WP_CLI::line( '❗ Invalid Section Name: ' . $args[0] . " - section names should start with capital letter or digit and contain at least 2 characters" );
+		if ( isset( $args[0] ) && ! $this->is_valid_section_name( $args[0] ) ) {
+			WP_CLI::line( '❗ Invalid Section Name: ' . $args[0] . ' - section names should start with capital letter or digit and contain at least 2 characters' );
 			unset( $args[0] );
 		}
 
 		if ( empty( $args[0] ) ) {
-			while (true) {
+			while ( true ) {
 				WP_CLI::line( '❓ Please enter section name(CamelCase, e.g. "CallToAction"): ' );
 				$section_name = readline();
 				if ( $this->is_valid_section_name( $section_name ) ) {
 					break;
 				}
-				WP_CLI::line( '❗ Invalid Section Name: ' . $section_name . " - section names should start with capital letter and contain at least 2 characters)" );
+				WP_CLI::line( '❗ Invalid Section Name: ' . $section_name . ' - section names should start with capital letter and contain at least 2 characters)' );
 			}
 		} else {
 			$section_name = $args[0];
@@ -40,7 +40,7 @@ class MakeSectionCommand {
 		$sections_dir_path = get_stylesheet_directory() . '/sections/';
 		$section_file_path = $sections_dir_path . $section_name . '.php';
 
-		if ( !file_exists( $sections_dir_path ) ) {
+		if ( ! file_exists( $sections_dir_path ) ) {
 			mkdir( $sections_dir_path );
 		}
 
@@ -68,7 +68,7 @@ class MakeSectionCommand {
 		$sections_registration_file = get_stylesheet_directory() . '/includes/sections.php';
 
 		$registration_php_code = '\\Sections\\' . $section_name . '::register();';
-		if (!file_exists($sections_registration_file)) {
+		if ( ! file_exists( $sections_registration_file ) ) {
 			WP_CLI::line( sprintf(
 				"💡 To register this section in your theme, use\n\n%s",
 				$registration_php_code,
@@ -76,9 +76,9 @@ class MakeSectionCommand {
 			return 0;
 		}
 
-		$already_registered_sections_php_source = file_get_contents($sections_registration_file);
+		$already_registered_sections_php_source = file_get_contents( $sections_registration_file );
 
-		if (strstr($already_registered_sections_php_source, $registration_php_code) !== false) {
+		if ( strstr( $already_registered_sections_php_source, $registration_php_code ) !== false ) {
 			return 0;
 		}
 
@@ -89,9 +89,9 @@ class MakeSectionCommand {
 		);
 
 		WP_CLI::line( sprintf(
-			"✅ Section registered in %s",
+			'✅ Section registered in %s',
 			$sections_registration_file
-		));
+		) );
 
 		exit( 0 );
 	}
@@ -100,11 +100,10 @@ class MakeSectionCommand {
 	 * Validate section name: require at least 2 characters, starting with a capital
 	 * letter or a digit.
 	 *
-	 * @param string $section_name_candidate
 	 * @return bool
 	 */
 	function is_valid_section_name( string $section_name_candidate ) {
-		return !!preg_match( '~^[\dA-Z].+~', $section_name_candidate );
+		return (bool) preg_match( '~^[\dA-Z].+~', $section_name_candidate );
 	}
 
 	/**
@@ -112,7 +111,7 @@ class MakeSectionCommand {
 	 * the template variables.
 	 *
 	 * @param string $template_file_location
-	 * @param array $context
+	 *
 	 * @return string
 	 */
 	function render_template( string $template_file_source, array $context ) {
