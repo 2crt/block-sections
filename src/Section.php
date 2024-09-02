@@ -83,7 +83,7 @@ abstract class Section {
 			$args['title'] = ucwords( $child_slug );
 
 			// This is required by WordPress, so the block is insertable only in specific block types
-			$args['parent'] = [ $parent_block_type_slug ];
+			$args['parent'] = [ 'acf/' . $parent_block_type_slug ];
 		} else {
 			$args['inner_block_types'] = $this->inner_block_types;
 		}
@@ -298,10 +298,20 @@ abstract class Section {
 			return array_values( $allowed_blocks );
 		}
 
-		$allowed_blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
-		$allowed_blocks = array_keys( $allowed_blocks );
+		$all_blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
 
-		return  array_values( $allowed_blocks );
+		$allowed_block_slugs = [];
+
+		foreach ( $all_blocks as $block_slug => $block ) {
+			$is_foreign_block = strpos( $block_slug, 'acf/app-' ) !== 0;
+			$is_our_root_block = !$is_foreign_block && empty( $block->parent );
+
+			if ( $is_foreign_block || $is_our_root_block ) {
+				$allowed_block_slugs[] = $block_slug;
+			}
+		}
+
+		return $allowed_block_slugs;
 	}
 
 }
