@@ -52,9 +52,9 @@ class {{ name }} extends Section {
 	 */
 	function render( $block, $content, $is_preview, $post_id, $wp_block, $context ) {
 		?>
-		<section class="section section--{{ slug_without_section_suffix }}">
+		<section class="section-{{ slug_without_section_suffix }}">
 			<?php // $this->inner_blocks($block) ?>
-		</section><!-- /.section -->
+		</section><!-- /.section-box -->
 		<?php
 	}
 
