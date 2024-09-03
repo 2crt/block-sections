@@ -20,7 +20,7 @@ class {{ name }} extends Section {
 
 		// Example screenshot of the section for gutenberg block inserter. This allows
 		// editors to understand what the blocks looks like before it's inserted
-		$this->example_screenshot = get_stylesheet_directory_uri() . '/resources/images/previews/{{ slug }}.png';
+		$this->example_screenshot = get_stylesheet_directory_uri() . '/resources/images/previews/{{ slug_without_section_suffix }}.png';
 
 		// The `$setting` for the section's root ACF block. See
 		// https://www.advancedcustomfields.com/resources/acf_register_block_type/#settings
