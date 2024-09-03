@@ -54,7 +54,7 @@ class {{ name }} extends Section {
 		?>
 		<section class="section-{{ slug_without_section_suffix }}">
 			<?php // $this->inner_blocks($block) ?>
-		</section><!-- /.section-box -->
+		</section><!-- /.section-{{ slug_without_section_suffix }} -->
 		<?php
 	}
 
