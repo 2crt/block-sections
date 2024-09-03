@@ -40,7 +40,7 @@ class {{ name }} extends Section {
 	}
 
 	/**
-	 * Render Section root element.
+	 * Render section root element.
 	 *
 	 * @param $block
 	 * @param $content
