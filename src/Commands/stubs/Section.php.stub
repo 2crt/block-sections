@@ -27,6 +27,8 @@ class {{ name }} extends Section {
 		// https://www.advancedcustomfields.com/resources/acf_register_block_type/#settings
 		$this->args = [
 			'description' => __( '{{ description }}', 'app' ),
+			'category' => 'app-block-sections',
+			'icon' => 'block-default',
 			'keywords' => [
 				'{{ slug }}'
 			],

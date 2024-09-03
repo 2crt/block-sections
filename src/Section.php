@@ -134,7 +134,7 @@ abstract class Section {
 			'description' => '',
 			'render_callback' => $callback,
 			'post_types' => [],
-			'category' => 'app-custom',
+			'category' => 'app-block-sections',
 			'icon' => $this->block_type_has_acf_fields( $slug ) ? 'admin-settings' : 'block-default',
 			'keywords' => [],
 			'align' => 'full',
