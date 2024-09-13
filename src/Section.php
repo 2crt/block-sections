@@ -43,6 +43,7 @@ abstract class Section {
 	 */
 	function __construct() {
 		$this->is_debug = defined( 'WP_DEBUG' ) && WP_DEBUG;
+
 		$this->init();
 	}
 
@@ -78,6 +79,14 @@ abstract class Section {
 		array $args,
 		?string $parent_block_type_slug = null
 	) {
+		if ( ! function_exists( 'acf_register_block_type' ) ) {
+			if ( $this->is_debug ) {
+				throw new \RuntimeException( 'Enable ACF to use BlockSections' );
+			} else {
+				return;
+			}
+		}
+
 		if ( isset( $parent_block_type_slug ) ) {
 			$child_slug = str_replace( $parent_block_type_slug . '-', '', $slug );
 			$args['title'] = ucwords( $child_slug );
@@ -176,7 +185,7 @@ abstract class Section {
 			} else {
 				// This is a result of improper block type registration. A developer has passed block type
 				// that's not correct
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				if ( $this->is_debug ) {
 					throw new \RuntimeException( 'Unknown Inner Block Type: ' . print_r( $child, 1 ) );
 				}
 			}
