@@ -42,7 +42,7 @@ abstract class Section {
 	 * Constuctor
 	 */
 	function __construct() {
-        $this->is_debug = defined('WP_DEBUG') && WP_DEBUG;
+		$this->is_debug = defined( 'WP_DEBUG' ) && WP_DEBUG;
 		$this->init();
 	}
 
@@ -113,20 +113,20 @@ abstract class Section {
 			$supports['multiple'] = $args['multiple'];
 		}
 
-        if ($parent_block_type_slug) {
-            $implied_render_callback = trim( str_replace(
-                '-',
-                '_',
-                'render_' . ltrim( str_replace( 'app-' . $this->name, '', $slug ), '-' )
-            ), '_' );
-            $callback = [$this, $implied_render_callback];
+		if ( $parent_block_type_slug ) {
+			$implied_render_callback = trim( str_replace(
+				'-',
+				'_',
+				'render_' . ltrim( str_replace( 'app-' . $this->name, '', $slug ), '-' )
+			), '_' );
+			$callback = [$this, $implied_render_callback];
 
-            if (!is_callable($callback) && $this->is_debug) {
-                throw new \RuntimeException("Callback for section block not found: " . $implied_render_callback);
-            }
-        } else {
-            $callback = [$this, '_render_root_block'];
-        }
+			if ( ! is_callable( $callback ) && $this->is_debug ) {
+				throw new \RuntimeException( 'Callback for section block not found: ' . $implied_render_callback );
+			}
+		} else {
+			$callback = [$this, '_render_root_block'];
+		}
 
 		$args = wp_parse_args( $args, [
 			'name' => $slug,
@@ -142,14 +142,14 @@ abstract class Section {
 			'supports' => $supports,
 		] );
 
-        if (empty($parent_block_type_slug) && !empty($this->example_screenshot)) {
-            $args['example'] = [
-                'attributes' => [
-                    'mode' => 'preview',
-                    'data' => [ '_is_preview' => true ]
-                ]
-            ];
-        }
+		if ( empty( $parent_block_type_slug ) && ! empty( $this->example_screenshot ) ) {
+			$args['example'] = [
+				'attributes' => [
+					'mode' => 'preview',
+					'data' => [ '_is_preview' => true ],
+				],
+			];
+		}
 
 		acf_register_block_type( $args );
 
@@ -268,30 +268,23 @@ abstract class Section {
 		return in_array( $block_type_slug, ( $blocks_with_fields ?: [] ) );
 	}
 
-    /**
-     * Handle the root in the base class in order to show example screenshot when needed.
-     * When a screenshot of the section is needed, this method will return it.
-     * In all other cases it's just a proxy for the actual render method. 
-     *
-	 * @param $block
-	 * @param $content
-	 * @param $is_preview
-	 * @param $post_id
-	 * @param $wp_block
-	 * @param $context
+	/**
+	 * Handle the root in the base class in order to show example screenshot when needed.
+	 * When a screenshot of the section is needed, this method will return it.
+	 * In all other cases it's just a proxy for the actual render method. 
+	 *
 	 * @return void
-     */
-    function _render_root_block( $block, $content, $is_preview, $post_id, $wp_block, $context ) {
-        if ( isset( $block['data']['_is_preview'] ) && $block['data']['_is_preview'] ) {
-            if (!empty($this->example_screenshot)) {
-                echo '<img src="' . $this->example_screenshot . '">';
-                return;
-            }
-        }
+	 */
+	function _render_root_block( $block, $content, $is_preview, $post_id, $wp_block, $context ) {
+		if ( isset( $block['data']['_is_preview'] ) && $block['data']['_is_preview'] ) {
+			if ( ! empty( $this->example_screenshot ) ) {
+				echo '<img src="' . $this->example_screenshot . '">';
+				return;
+			}
+		}
 
-        return $this->render( $block, $content, $is_preview, $post_id, $wp_block, $context );
-    }
-
+		return $this->render( $block, $content, $is_preview, $post_id, $wp_block, $context );
+	}
 
 	private function get_allowed_block_types( $allowed_blocks = [] ) {
 		if ( ! empty( $allowed_blocks ) ) {
@@ -304,7 +297,7 @@ abstract class Section {
 
 		foreach ( $all_blocks as $block_slug => $block ) {
 			$is_foreign_block = strpos( $block_slug, 'acf/app-' ) !== 0;
-			$is_our_root_block = !$is_foreign_block && empty( $block->parent );
+			$is_our_root_block = ! $is_foreign_block && empty( $block->parent );
 
 			if ( $is_foreign_block || $is_our_root_block ) {
 				$allowed_block_slugs[] = $block_slug;
@@ -313,6 +306,5 @@ abstract class Section {
 
 		return $allowed_block_slugs;
 	}
-
 }
 
