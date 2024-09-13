@@ -80,11 +80,8 @@ abstract class Section {
 		?string $parent_block_type_slug = null
 	) {
 		if ( ! function_exists( 'acf_register_block_type' ) ) {
-			if ( $this->is_debug ) {
-				throw new \RuntimeException( 'Enable ACF to use BlockSections' );
-			} else {
-				return;
-			}
+			trigger_error( 'Enable ACF to use BlockSections for ' . $slug, E_USER_WARNING );
+			return;
 		}
 
 		if ( isset( $parent_block_type_slug ) ) {
