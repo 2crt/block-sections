@@ -103,18 +103,6 @@ abstract class Section {
 			'align' => [ 'full' ],
 		];
 
-		if ( isset( $args['edit_acf_fields_in_place'] ) ) {
-			// In order to enable "in place" ACF fields едитинг , we should disable jsx. See:
-			// see https://www.advancedcustomfields.com/resources/acf_register_block_type/#functionsphp
-			unset( $supports['jsx'] );
-
-			// ACF Support for toggling the mode shuld be set to the default - `true`
-			$supports['mode'] = true;
-
-			// With auto mode, preview is shown by default but changes to edit form when block is selected
-			$args['mode'] = 'auto';
-		}
-
 		if ( isset( $args['multiple'] ) ) {
 			$supports['multiple'] = $args['multiple'];
 		}
@@ -134,6 +122,9 @@ abstract class Section {
 			$callback = [$this, '_render_root_block'];
 		}
 
+		$ACF_VERSION = get_option('acf_version', false);
+		$ACF_VERSION_COMPARISON = version_compare($ACF_VERSION, '6.6', '>=');
+
 		$args = wp_parse_args( $args, [
 			'name' => $slug,
 			'title' => $title,
@@ -146,6 +137,8 @@ abstract class Section {
 			'align' => 'full',
 			'mode' => 'preview',
 			'supports' => $supports,
+			'api_version' => 3,
+			'acf_block_version' => $ACF_VERSION_COMPARISON ? 3 : 2,
 		] );
 
 		if ( empty( $parent_block_type_slug ) && ! empty( $this->example_screenshot ) ) {

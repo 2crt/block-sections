@@ -1,3 +1,7 @@
+## 2.0.0
+ * Update: ACF Block Version to 3
+ * Remove: ThemeBlockType::editable_in_place()
+
 ## 1.0.1
 
  * Introduce `$section->example_screenshot` property for block inserter preview

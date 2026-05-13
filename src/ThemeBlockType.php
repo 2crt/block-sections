@@ -17,7 +17,7 @@ namespace BlockSections;
  *
  * ```
  *     $this->child_block_types = [
- * 	      Block::make('items')->editable_in_place(),
+ * 	      Block::make('items')->singular(),
  *        'quantities'
  *     ];
  * ```
@@ -61,17 +61,6 @@ class ThemeBlockType {
 	public function __construct( $slug, $args ) {
 		$this->slug = $slug;
 		$this->args = $args;
-	}
-
-	/**
-	 * Make a block that contains custom fields editable in place(rather than
-	 * in the sidebar)
-	 *
-	 * @return ThemeBlockType
-	 */
-	public function editable_in_place() {
-		$this->args[ 'edit_acf_fields_in_place' ] = true;
-		return $this;
 	}
 
 	/**
